@@ -1,4 +1,6 @@
+import random
 import arcade
+from pyglet.graphics import Batch
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -9,7 +11,7 @@ WORLD_HEIGHT = 6000
 
 
 class Player(arcade.Sprite):
-    def __init__(self, image_path=":resources:images/animated_characters/female_person/femalePerson_idle.png"):
+    def __init__(self, image_path="images/npc/player_good_npc.png"):
         super().__init__(image_path, scale=0.5)
         self.speed = 3
         self.sprint_speed = 5
@@ -83,7 +85,6 @@ class MyGame(arcade.Window):
         DEAD_X = 200
         DEAD_Y = 120
 
-
         left = cam_x - half_w + DEAD_X
         right = cam_x + half_w - DEAD_X
         bottom = cam_y - half_h + DEAD_Y
@@ -99,13 +100,13 @@ class MyGame(arcade.Window):
         elif py > top:
             cam_y += (py - top)
 
-
         cam_x = max(half_w, min(cam_x, WORLD_WIDTH - half_w))
         cam_y = max(half_h, min(cam_y, WORLD_HEIGHT - half_h))
 
         self.camera.position = (cam_x, cam_y)
 
     def setup(self):
+        self.background = arcade.load_texture('images/backgrounds/background.png')
         self.camera = arcade.Camera2D()
         self.scene = arcade.Scene()
         self.player = Player()
@@ -115,12 +116,12 @@ class MyGame(arcade.Window):
 
         platforms = arcade.SpriteList()
         for x in range(0, 9000, 64):
-            platform = arcade.Sprite(":resources:images/tiles/grassMid.png", scale=0.5)
+            platform = arcade.Sprite("images/backgrounds/ground.png", scale=0.5)
             platform.center_x = x
             platform.center_y = 32
             platforms.append(platform)
         for i in range(10):
-            platform1 = arcade.Sprite(":resources:images/tiles/grassMid.png", scale=0.5)
+            platform1 = arcade.Sprite("images/backgrounds/island.png", scale=0.5)
             platform1.center_x = 300 + i * 100
             platform1.center_y = 200 + i * 100
             platforms.append(platform1)
@@ -136,6 +137,12 @@ class MyGame(arcade.Window):
 
     def on_draw(self):
         self.clear()
+
+        for i in range(0, 10):
+            for j in range(0, 10):
+                arcade.draw_texture_rect(self.background,
+                                         arcade.rect.XYWH(0 + 800 * j, 0 + 600 * i, SCREEN_WIDTH, SCREEN_HEIGHT))
+
         self.camera.use()
         self.scene.draw()
 
@@ -154,19 +161,19 @@ class MyGame(arcade.Window):
         self.center_camera_to_player()
 
     def on_key_press(self, key, modifiers):
-        if key == arcade.key.LEFT:
+        if key == arcade.key.A:
             self.left_pressed = True
-        elif key == arcade.key.RIGHT:
+        elif key == arcade.key.D:
             self.right_pressed = True
-        elif key == arcade.key.UP:
+        elif key == arcade.key.SPACE:
             self.player.jump()
         elif key in (arcade.key.LSHIFT, arcade.key.RSHIFT):
             self.shift_pressed = True
 
     def on_key_release(self, key, modifiers):
-        if key == arcade.key.LEFT:
+        if key == arcade.key.A:
             self.left_pressed = False
-        elif key == arcade.key.RIGHT:
+        elif key == arcade.key.D:
             self.right_pressed = False
         elif key in (arcade.key.LSHIFT, arcade.key.RSHIFT):
             self.shift_pressed = False
